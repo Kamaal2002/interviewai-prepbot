@@ -3,6 +3,7 @@ import { User, LogOut, Brain } from 'lucide-react';
 
 const Navigation = ({ 
   isLoggedIn, 
+  currentUser,
   showUserDropdown, 
   setShowUserDropdown, 
   activeTab, 
@@ -55,9 +56,19 @@ const Navigation = ({
                 className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
-                  <User className="w-4 h-4 text-white" />
+                  <span className="text-white font-semibold text-sm">
+                    {currentUser?.email ? 
+                      currentUser.email.split('@')[0].charAt(0).toUpperCase()
+                      : 'U'
+                    }
+                  </span>
                 </div>
-                <span className="text-gray-700 font-medium">Account</span>
+                <span className="text-gray-700 font-medium">
+                  {currentUser?.email ? 
+                    currentUser.email.split('@')[0].charAt(0).toUpperCase() + currentUser.email.split('@')[0].slice(1)
+                    : 'User'
+                  }
+                </span>
               </button>
 
               {showUserDropdown && (

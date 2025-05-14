@@ -9,7 +9,6 @@ const HistoryPage = ({
   sessionsLoaded,
   userSessions,
   sessionsLoading,
-  mockHistory,
   loadUserSessions,
   handleReviewSession,
   setActiveTab
@@ -22,8 +21,8 @@ const HistoryPage = ({
     }
   }, [isLoggedIn, sessionsLoaded, loadUserSessions]);
 
-  // Use real sessions if available, otherwise fall back to mock data
-  const sessions = userSessions.length > 0 ? userSessions : mockHistory;
+  // Use real user sessions only
+  const sessions = userSessions;
   
   console.log('HistoryPage: userSessions length:', userSessions.length);
   console.log('HistoryPage: sessions being used:', sessions);
@@ -83,93 +82,97 @@ const HistoryPage = ({
           </div>
         )}
         
-        <div className="space-y-4">
-          {sessions.map((session) => (
-            <div key={session.id} className="bg-white rounded-3xl p-6 shadow-xl border border-slate-200 hover:shadow-2xl transition-all duration-300 group">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-6">
-                  <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="text-white font-bold text-lg">{session.score}</div>
-                      <div className="text-blue-200 text-xs">SCORE</div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <h4 className="text-xl font-semibold text-slate-900">{session.title || 'Practice Session'}</h4>
-                    <div className="flex items-center space-x-4 text-slate-500">
-                      <span className="flex items-center space-x-1">
-                        <Clock className="w-4 h-4" />
-                        <span>{session.duration}</span>
-                      </span>
-                      <span className="flex items-center space-x-1">
-                        <BookOpen className="w-4 h-4" />
-                        <span>{session.question_count || session.questions} questions</span>
-                      </span>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        session.difficulty === 'Easy' ? 'text-emerald-600 bg-emerald-50' :
-                        session.difficulty === 'Medium' ? 'text-amber-600 bg-amber-50' :
-                        session.difficulty === 'Hard' ? 'text-red-600 bg-red-50' :
-                        'text-blue-600 bg-blue-50'
-                      }`}>
-                        {session.difficulty}
-                      </span>
-                    </div>
-                    <p className="text-slate-400 text-sm">{new Date(session.created_at || session.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                  </div>
-                </div>
 
-                <div className="flex items-center space-x-3">
-                  <div className="text-right">
-                    <div className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-sm font-medium ${
-                      session.score >= 90 ? 'text-emerald-600 bg-emerald-50' :
-                      session.score >= 75 ? 'text-blue-600 bg-blue-50' :
-                      session.score >= 60 ? 'text-amber-600 bg-amber-50' :
-                      'text-red-600 bg-red-50'
-                    }`}>
-                      <Star className="w-4 h-4" />
-                      <span>
-                        {session.score >= 90 ? 'Excellent' :
-                         session.score >= 75 ? 'Good' :
-                         session.score >= 60 ? 'Fair' : 'Needs Work'}
-                      </span>
+        
+        {!sessionsLoading && sessions.length > 0 && (
+          <div className="space-y-4">
+            {sessions.map((session) => (
+              <div key={session.id} className="bg-white rounded-3xl p-6 shadow-xl border border-slate-200 hover:shadow-2xl transition-all duration-300 group">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-6">
+                    <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="text-white font-bold text-lg">{session.score}</div>
+                        <div className="text-blue-200 text-xs">SCORE</div>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <h4 className="text-xl font-semibold text-slate-900">{session.title || 'Practice Session'}</h4>
+                      <div className="flex items-center space-x-4 text-slate-500">
+                        <span className="flex items-center space-x-1">
+                          <Clock className="w-4 h-4" />
+                          <span>{session.duration}</span>
+                        </span>
+                        <span className="flex items-center space-x-1">
+                          <BookOpen className="w-4 h-4" />
+                          <span>{session.question_count || session.questions} questions</span>
+                        </span>
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          session.difficulty === 'Easy' ? 'text-emerald-600 bg-emerald-50' :
+                          session.difficulty === 'Medium' ? 'text-amber-600 bg-amber-50' :
+                          session.difficulty === 'Hard' ? 'text-red-600 bg-red-50' :
+                          'text-blue-600 bg-blue-50'
+                        }`}>
+                          {session.difficulty}
+                        </span>
+                      </div>
+                      <p className="text-slate-400 text-sm">{new Date(session.created_at || session.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
                     </div>
                   </div>
-                  
-                  <button 
-                    onClick={() => handleReviewSession(session)}
-                    className="flex items-center space-x-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl font-medium transition-all duration-200 group-hover:bg-blue-100 group-hover:text-blue-700"
-                  >
-                    <span>Review</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
+
+                  <div className="flex items-center space-x-3">
+                    <div className="text-right">
+                      <div className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-sm font-medium ${
+                        session.score >= 90 ? 'text-emerald-600 bg-emerald-50' :
+                        session.score >= 75 ? 'text-blue-600 bg-blue-50' :
+                        session.score >= 60 ? 'text-amber-600 bg-amber-50' :
+                        'text-red-600 bg-red-50'
+                      }`}>
+                        <Star className="w-4 h-4" />
+                        <span>
+                          {session.score >= 90 ? 'Excellent' :
+                           session.score >= 75 ? 'Good' :
+                           session.score >= 60 ? 'Fair' : 'Needs Work'}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <button 
+                      onClick={() => handleReviewSession(session)}
+                      className="flex items-center space-x-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl font-medium transition-all duration-200 group-hover:bg-blue-100 group-hover:text-blue-700"
+                    >
+                      <span>Review</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {sessions.length === 0 && (
-        <div className="text-center py-16">
-          <div className="w-24 h-24 bg-slate-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
-            <Clock className="w-12 h-12 text-slate-400" />
+            ))}
           </div>
-          <h3 className="text-2xl font-bold text-slate-900 mb-4">No practice sessions yet</h3>
-          <p className="text-slate-500 mb-8 max-w-md mx-auto">
-            Start your first practice session to track your progress and improve your interview skills
-          </p>
-          <button
-            onClick={() => setActiveTab('practice')}
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-xl"
-          >
-            <div className="flex items-center space-x-2">
-              <Zap className="w-5 h-5" />
-              <span>Start First Session</span>
+        )}
+
+        {!sessionsLoading && sessions.length === 0 && (
+          <div className="text-center py-16">
+            <div className="w-24 h-24 bg-slate-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
+              <Clock className="w-12 h-12 text-slate-400" />
             </div>
-          </button>
-        </div>
-      )}
+            <h3 className="text-2xl font-bold text-slate-900 mb-4">No practice sessions yet</h3>
+            <p className="text-slate-500 mb-8 max-w-md mx-auto">
+              Start your first practice session to track your progress and improve your interview skills
+            </p>
+            <button
+              onClick={() => setActiveTab('practice')}
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-xl"
+            >
+              <div className="flex items-center space-x-2">
+                <Zap className="w-5 h-5" />
+                <span>Start First Session</span>
+              </div>
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

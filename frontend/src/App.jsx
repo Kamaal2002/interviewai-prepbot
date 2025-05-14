@@ -58,6 +58,7 @@ function App() {
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [currentUser, setCurrentUser] = useState(null);
 
   // Use refs to avoid re-renders for auth forms
   const emailRef = useRef('');
@@ -87,28 +88,7 @@ function App() {
     }
   ];
 
-  const mockHistory = [
-    { 
-      id: 1, 
-      title: "Technical Interview Practice",
-      score: 85,
-      difficulty: "Medium",
-      duration: "45 min",
-      questions: 5, 
-      date: "2024-01-15",
-      created_at: "2024-01-15T10:00:00Z"
-    },
-    {
-      id: 2,
-      title: "Behavioral Questions Session",
-      score: 92,
-      difficulty: "Easy",
-      duration: "30 min",
-      questions: 3,
-      date: "2024-01-14",
-      created_at: "2024-01-14T14:30:00Z"
-    }
-  ];
+
 
   // Simple handlers that don't cause re-renders
   const handleEmailChange = (e) => {
@@ -204,14 +184,17 @@ function App() {
       if (user) {
         setIsLoggedIn(true);
         setCurrentPage('dashboard');
+        setCurrentUser(user);
       } else {
         setIsLoggedIn(false);
         setCurrentPage('welcome');
+        setCurrentUser(null);
       }
     } catch (error) {
       console.error('Error checking auth state:', error);
       setIsLoggedIn(false);
       setCurrentPage('welcome');
+      setCurrentUser(null);
     } finally {
       setIsInitializing(false);
     }
@@ -247,6 +230,7 @@ function App() {
     auth.signOut();
     setIsLoggedIn(false);
     setCurrentPage('welcome');
+    setCurrentUser(null);
     setUserSessions([]);
     setSessionsLoaded(false);
     setDifficultyPreferences({ easy: 0, medium: 0, hard: 0 });
@@ -528,6 +512,7 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex flex-col">
       <Navigation 
         isLoggedIn={isLoggedIn}
+        currentUser={currentUser}
         showUserDropdown={showUserDropdown}
         setShowUserDropdown={setShowUserDropdown}
         activeTab={activeTab}
@@ -577,16 +562,15 @@ function App() {
             clearRecording={clearRecording}
           />
         ) : (
-          <HistoryPage
-            isLoggedIn={isLoggedIn}
-            sessionsLoaded={sessionsLoaded}
-            userSessions={userSessions}
-            sessionsLoading={sessionsLoading}
-            mockHistory={mockHistory}
-            loadUserSessions={loadUserSessions}
-            handleReviewSession={handleReviewSession}
-            setActiveTab={setActiveTab}
-          />
+                  <HistoryPage
+          isLoggedIn={isLoggedIn}
+          sessionsLoaded={sessionsLoaded}
+          userSessions={userSessions}
+          sessionsLoading={sessionsLoading}
+          loadUserSessions={loadUserSessions}
+          handleReviewSession={handleReviewSession}
+          setActiveTab={setActiveTab}
+        />
         )}
       </main>
       <SessionReviewModal
