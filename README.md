@@ -1,184 +1,145 @@
-# InterviewAI - AI-Powered Interview Preparation App
+# InterviewAI - AI-Powered Interview Preparation Platform
 
-A React-based interview preparation application that uses AI to generate personalized interview questions based on your resume and job descriptions.
+A comprehensive interview preparation application that uses AI to generate personalized questions based on your resume and job descriptions.
 
-## Features
+## 🏗️ Project Structure
 
-- 🤖 **AI-Powered Question Generation**: Uses OpenAI to create personalized interview questions
-- 📄 **PDF Text Extraction**: Automatically extracts text from uploaded resumes and job descriptions
-- 🔐 **Supabase Authentication**: Secure user authentication and session management
-- 💾 **Session Storage**: Save and track your practice sessions
-- 🎯 **Personalized Practice**: Questions tailored to your experience and target role
-- 📊 **Progress Tracking**: Monitor your interview preparation progress
+```
+interviewai-prepbot/
+├── frontend/          # React + Vite frontend application
+│   ├── src/          # React source code
+│   ├── public/       # Static assets
+│   ├── package.json  # Frontend dependencies
+│   └── vite.config.js # Vite configuration
+├── backend/           # Node.js + Express backend
+│   ├── server.js     # Express server
+│   └── supabase/     # Supabase configuration & functions
+├── .gitignore        # Git ignore rules
+└── README.md         # This file
+```
 
-## Tech Stack
+## 🚀 Features
 
-- **Frontend**: React 19, Vite, Tailwind CSS
-- **Backend**: Express.js, Node.js
-- **Authentication**: Supabase Auth
-- **Database**: Supabase PostgreSQL
-- **Storage**: Supabase Storage
-- **AI**: OpenAI GPT-4
-- **File Processing**: PDF-parse, Multer
+- **AI-Powered Questions**: Generate personalized interview questions based on resume and job description
+- **Practice Sessions**: Record and practice your answers with microphone support
+- **Session History**: Track your progress and review past practice sessions
+- **User Authentication**: Secure sign-up/sign-in with Supabase
+- **Responsive Design**: Modern, mobile-friendly UI built with Tailwind CSS
 
-## Setup Instructions
+## 🛠️ Tech Stack
 
-### 1. Clone and Install Dependencies
+### Frontend
+
+- **React 18** - Modern React with hooks
+- **Vite** - Fast build tool and dev server
+- **Tailwind CSS** - Utility-first CSS framework
+- **Supabase** - Authentication and database
+
+### Backend
+
+- **Node.js** - JavaScript runtime
+- **Express** - Web framework
+- **Supabase** - Backend-as-a-Service
+
+## 📦 Installation & Setup
+
+### Prerequisites
+
+- Node.js (v16 or higher)
+- npm or yarn
+- Supabase account
+
+### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
-cd prepbot
+git clone https://github.com/Kamaal2002/interviewai-prepbot.git
+cd interviewai-prepbot
+```
+
+### 2. Setup Backend
+
+```bash
+cd backend
 npm install
+# Create .env file with your Supabase credentials
+npm start
 ```
 
-### 2. Environment Configuration
-
-Create a `.env` file in the root directory:
-
-```env
-# Supabase Configuration
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-
-# OpenAI Configuration
-VITE_OPENAI_API_KEY=your_openai_api_key
-
-# Backend API URL (for development)
-VITE_API_URL=http://localhost:3001
-```
-
-### 3. Supabase Setup
-
-1. Create a new project at [supabase.com](https://supabase.com)
-2. Get your project URL and anon key from Settings > API
-3. Create the following table in your Supabase database:
-
-```sql
--- Create practice_sessions table
-CREATE TABLE practice_sessions (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  questions_count INTEGER NOT NULL,
-  question_types TEXT[] NOT NULL,
-  difficulty TEXT DEFAULT 'mixed',
-  score INTEGER,
-  duration INTEGER,
-  questions JSONB,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Enable Row Level Security
-ALTER TABLE practice_sessions ENABLE ROW LEVEL SECURITY;
-
--- Create policy to allow users to access only their own sessions
-CREATE POLICY "Users can view own sessions" ON practice_sessions
-  FOR SELECT USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can insert own sessions" ON practice_sessions
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
-
-CREATE POLICY "Users can update own sessions" ON practice_sessions
-  FOR UPDATE USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can delete own sessions" ON practice_sessions
-  FOR DELETE USING (auth.uid() = user_id);
-```
-
-4. Create a storage bucket for file uploads:
-   - Go to Storage in your Supabase dashboard
-   - Create a new bucket called `uploads`
-   - Set it to private
-
-### 4. OpenAI Setup
-
-1. Get an API key from [OpenAI](https://platform.openai.com/api-keys)
-2. Add it to your `.env` file
-
-### 5. Test API Integration
-
-Before running the full application, test that your API is working:
+### 3. Setup Frontend
 
 ```bash
-# Start the backend server
-npm run server
-
-# In another terminal, test the API
-npm run test:api
-```
-
-This will test:
-- Backend server connectivity
-- OpenAI API integration
-- Question generation functionality
-
-### 6. Run the Application
-
-#### Development Mode (Frontend + Backend)
-
-```bash
-npm run dev:full
-```
-
-#### Frontend Only
-
-```bash
+cd frontend
+npm install
 npm run dev
 ```
 
-#### Backend Only
+## 🔧 Environment Variables
+
+Create a `.env` file in the backend directory:
+
+```env
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+OPENAI_API_KEY=your_openai_api_key
+```
+
+## 🚀 Usage
+
+1. **Sign up/Login** to your account
+2. **Upload your resume** (PDF, DOCX, TXT)
+3. **Enter job description** for the position you're applying to
+4. **Generate questions** based on your profile
+5. **Practice answering** with microphone recording
+6. **Review sessions** and track your progress
+
+## 📱 Available Scripts
+
+### Frontend
 
 ```bash
-npm run server
+cd frontend
+npm run dev      # Start development server
+npm run build    # Build for production
+npm run preview  # Preview production build
 ```
 
-The application will be available at:
+### Backend
 
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:3001
-
-## API Endpoints
-
-- `GET /api/health` - Health check
-- `POST /api/extract-text` - Extract text from uploaded files
-- `POST /api/generate-questions` - Generate interview questions using OpenAI
-
-## Usage
-
-1. **Sign In**: Create an account or sign in with existing credentials
-2. **Upload Resume**: Upload your resume (PDF, DOC, DOCX, TXT)
-3. **Add Job Description**: Paste or upload the job description
-4. **Customize Session**: Select question types and count
-5. **Generate Questions**: Get AI-powered personalized questions
-6. **Practice**: Review questions and answer guidelines
-7. **Track Progress**: Monitor your practice sessions in the History tab
-
-## File Structure
-
-```
-prepbot/
-├── src/
-│   ├── lib/
-│   │   ├── supabase.js      # Supabase client and helpers
-│   │   └── api.js           # API service functions
-│   ├── hooks/
-│   │   ├── useAuth.js       # Authentication hook
-│   │   └── usePracticeSessions.js # Practice sessions hook
-│   ├── App.jsx              # Main application component
-│   └── main.jsx             # Application entry point
-├── server.js                # Express backend server
-├── package.json             # Dependencies and scripts
-└── README.md               # This file
+```bash
+cd backend
+npm start        # Start production server
+npm run dev      # Start development server (if nodemon is configured)
 ```
 
-## Contributing
+## 🌐 Deployment
+
+### Frontend
+
+- Deploy to Vercel, Netlify, or GitHub Pages
+- Build command: `npm run build`
+- Output directory: `dist/`
+
+### Backend
+
+- Deploy to Heroku, Railway, or any Node.js hosting
+- Ensure environment variables are set
+
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## License
+## 📄 License
 
-MIT License - see LICENSE file for details
+This project is licensed under the MIT License.
+
+## 👨‍💻 Author
+
+**Kamaal Alag** - [GitHub](https://github.com/Kamaal2002)
+
+---
+
+⭐ **Star this repository if you find it helpful!**
